@@ -171,6 +171,42 @@ body {
 .header-nav {
   display: flex;
   align-items: center;
+  gap: 1rem;
+}
+
+.favorites-nav-button {
+  padding: 0.875rem 1.75rem;
+  background: linear-gradient(135deg, #e91e63, #c2185b);
+  color: var(--text-light);
+  border: none;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.favorites-nav-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.favorites-nav-button:hover::before {
+  left: 100%;
+}
+
+.favorites-nav-button:hover {
+  background: linear-gradient(135deg, #c2185b, #e91e63);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
 }
 
 .login-nav-button {
@@ -206,6 +242,41 @@ body {
   background: linear-gradient(135deg, var(--pelisplus-red-dark), var(--pelisplus-red));
   transform: translateY(-2px);
   box-shadow: 0 8px 25px var(--shadow-glow);
+}
+
+.logout-nav-button {
+  padding: 0.875rem 1.75rem;
+  background: linear-gradient(135deg, var(--pelisplus-gray), var(--pelisplus-gray-light));
+  color: var(--text-light);
+  border: none;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.logout-nav-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.logout-nav-button:hover::before {
+  left: 100%;
+}
+
+.logout-nav-button:hover {
+  background: linear-gradient(135deg, var(--pelisplus-gray-light), var(--pelisplus-gray));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(77, 77, 77, 0.3);
 }
 
 /* ===== HERO SECTION ===== */

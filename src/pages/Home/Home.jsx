@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import './home.css';
 import pelisplusLogo from '../../assets/pelisplus.png';
+import { getPeliculas, getFavoritosUsuario, addFavorito, removeFavorito, isPeliculaFavorita } from '../../api';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -11,6 +13,8 @@ const Home = () => {
   const [generoSeleccionado, setGeneroSeleccionado] = useState('todos');
   const [loading, setLoading] = useState(true);
   const [favoritos, setFavoritos] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [usuario, setUsuario] = useState(null);
 
   // Datos de películas de ejemplo
   const peliculasEjemplo = [
@@ -96,32 +100,72 @@ const Home = () => {
     }
   ];
 
-  const generos = ['todos', ...new Set(peliculasEjemplo.map(p => p.genero))];
+  const generos = ['todos', ...new Set(peliculas.map(p => p.genero).filter(Boolean))];
 
   useEffect(() => {
-    // Cargar favoritos desde localStorage
-    const favoritosGuardados = localStorage.getItem('pelisplus_favoritos');
-    if (favoritosGuardados) {
-      setFavoritos(JSON.parse(favoritosGuardados));
+    // Verificar autenticación
+    const usuarioStr = localStorage.getItem('pelisplus_user');
+    if (!usuarioStr) {
+      navigate('/', { replace: true });
+      return;
     }
+
+    const usuarioData = JSON.parse(usuarioStr);
+    setUsuario(usuarioData);
+    setIsAdmin(usuarioData.usuario === 'admin');
+
+    const cargarDatos = async () => {
+      try {
+        // Cargar películas del backend
+        const pelisBackend = await getPeliculas();
+        setPeliculas(pelisBackend);
+        setPeliculasFiltradas(pelisBackend);
+
+        // Cargar favoritos del usuario
+        try {
+          const favsUsuario = await getFavoritosUsuario(usuarioData.id);
+          setFavoritos(favsUsuario.peliculas || []);
+        } catch (favError) {
+          console.log('Usuario sin favoritos o error al cargar favoritos');
+          setFavoritos([]);
+        }
+        
+      } catch (error) {
+        console.error('Error al cargar datos:', error);
+        // Mostrar error pero continuar con datos de ejemplo
+        await Swal.fire({
+          icon: 'warning',
+          title: 'Error al cargar datos',
+          text: 'No se pudieron cargar las películas del servidor. Mostrando contenido de ejemplo.',
+          background: '#1a1a1a',
+          color: '#ffffff'
+        });
+        
+        setPeliculas(peliculasEjemplo);
+        setPeliculasFiltradas(peliculasEjemplo);
+      } finally {
+        setLoading(false);
+      }
+    };
     
-    // Simular carga de datos
-    setTimeout(() => {
-      setPeliculas(peliculasEjemplo);
-      setPeliculasFiltradas(peliculasEjemplo);
-      setLoading(false);
-    }, 1000);
-  }, []);
+    cargarDatos();
+  }, [navigate]);
 
   useEffect(() => {
     let peliculasFiltradas = peliculas;
 
     // Filtrar por búsqueda
-    if (busqueda) {
-      peliculasFiltradas = peliculasFiltradas.filter(pelicula =>
-        pelicula.titulo.toLowerCase().includes(busqueda.toLowerCase()) ||
-        pelicula.genero.toLowerCase().includes(busqueda.toLowerCase())
-      );
+    if (busqueda.trim()) {
+      peliculasFiltradas = peliculasFiltradas.filter(pelicula => {
+        const titulo = pelicula.titulo?.toLowerCase() || '';
+        const genero = pelicula.genero?.toLowerCase() || '';
+        const director = pelicula.director?.toLowerCase() || '';
+        const busquedaLower = busqueda.toLowerCase();
+        
+        return titulo.includes(busquedaLower) || 
+               genero.includes(busquedaLower) ||
+               director.includes(busquedaLower);
+      });
     }
 
     // Filtrar por género
@@ -134,8 +178,48 @@ const Home = () => {
     setPeliculasFiltradas(peliculasFiltradas);
   }, [busqueda, generoSeleccionado, peliculas]);
 
-  const handleLogin = () => {
-    navigate('/login');
+  const handleAdministrar = () => {
+    const usuarioStr = localStorage.getItem('pelisplus_user');
+    if (usuarioStr) {
+      const usuario = JSON.parse(usuarioStr);
+      if (usuario.usuario === 'admin') {
+        navigate('/dashboard');
+      }
+    } else {
+      navigate('/');
+    }
+  };
+
+  const handleLogout = async () => {
+    const result = await Swal.fire({
+      title: '¿Cerrar sesión?',
+      text: '¿Estás seguro de que quieres cerrar sesión?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#e53e3e',
+      cancelButtonColor: '#4a5568',
+      confirmButtonText: 'Sí, cerrar sesión',
+      cancelButtonText: 'Cancelar',
+      background: '#1a1a1a',
+      color: '#ffffff'
+    });
+
+    if (result.isConfirmed) {
+      localStorage.removeItem('pelisplus_user');
+      localStorage.removeItem('pelisplus_remember');
+      
+      await Swal.fire({
+        icon: 'success',
+        title: 'Sesión cerrada',
+        text: '¡Hasta luego!',
+        timer: 1500,
+        showConfirmButton: false,
+        background: '#1a1a1a',
+        color: '#ffffff'
+      });
+      
+      navigate('/', { replace: true });
+    }
   };
 
   const handleMovieClick = (pelicula) => {
@@ -143,24 +227,91 @@ const Home = () => {
     console.log('Ver película:', pelicula.titulo);
   };
 
-  const toggleFavorito = (peliculaId, event) => {
+  const toggleFavorito = async (peliculaId, event) => {
     event.stopPropagation(); // Evitar que se active el click de la card
     
-    let nuevosFavoritos;
-    if (favoritos.includes(peliculaId)) {
-      // Quitar de favoritos
-      nuevosFavoritos = favoritos.filter(id => id !== peliculaId);
-    } else {
-      // Agregar a favoritos
-      nuevosFavoritos = [...favoritos, peliculaId];
+    try {
+      if (!usuario) {
+        await Swal.fire({
+          icon: 'warning',
+          title: 'Inicia sesión',
+          text: 'Debes iniciar sesión para gestionar favoritos',
+          background: '#1a1a1a',
+          color: '#ffffff'
+        });
+        return;
+      }
+
+      // Verificar si ya es favorito
+      const yaEsFavorito = favoritos.some(fav => fav.peliculaId === peliculaId);
+      
+      if (!yaEsFavorito) {
+        // Agregar a favoritos
+        await addFavorito(usuario.id, peliculaId);
+        
+        // Actualizar estado local
+        const nuevoFavorito = { 
+          peliculaId, 
+          usuarioId: usuario.id, 
+          fechaAgregado: new Date().toISOString() 
+        };
+        setFavoritos(prev => [...prev, nuevoFavorito]);
+        
+        // Obtener el nombre de la película
+        const pelicula = peliculas.find(p => p.id === peliculaId);
+        
+        await Swal.fire({
+          icon: 'success',
+          title: '¡Agregado a favoritos!',
+          text: `"${pelicula?.titulo}" se agregó a tus favoritos`,
+          timer: 2000,
+          showConfirmButton: false,
+          background: '#1a1a1a',
+          color: '#ffffff'
+        });
+      } else {
+        // Remover de favoritos
+        await removeFavorito(usuario.id, peliculaId);
+        
+        // Actualizar estado local
+        setFavoritos(prev => prev.filter(fav => fav.peliculaId !== peliculaId));
+        
+        // Obtener el nombre de la película
+        const pelicula = peliculas.find(p => p.id === peliculaId);
+        
+        await Swal.fire({
+          icon: 'success',
+          title: 'Eliminado de favoritos',
+          text: `"${pelicula?.titulo}" se eliminó de tus favoritos`,
+          timer: 2000,
+          showConfirmButton: false,
+          background: '#1a1a1a',
+          color: '#ffffff'
+        });
+      }
+    } catch (error) {
+      console.error('Error al gestionar favorito:', error);
+      
+      let errorMessage = 'No se pudo actualizar favoritos. Intenta nuevamente.';
+      if (error.message.includes('ya está en favoritos')) {
+        errorMessage = 'Esta película ya está en tus favoritos';
+      } else if (error.message.includes('no encontrado')) {
+        errorMessage = 'No se encontró el favorito para eliminar';
+      }
+      
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: errorMessage,
+        background: '#1a1a1a',
+        color: '#ffffff'
+      });
     }
-    
-    setFavoritos(nuevosFavoritos);
-    localStorage.setItem('pelisplus_favoritos', JSON.stringify(nuevosFavoritos));
   };
 
   const esFavorito = (peliculaId) => {
-    return favoritos.includes(peliculaId);
+    if (!usuario) return false;
+    return favoritos.some(fav => fav.peliculaId === peliculaId);
   };
 
   if (loading) {
@@ -184,8 +335,16 @@ const Home = () => {
             <h1 className="home-title">Pelisplus</h1>
           </div>
           <nav className="header-nav">
-            <button onClick={handleLogin} className="login-nav-button">
-              Administrar
+            <button onClick={() => navigate('/favoritos')} className="favorites-nav-button">
+              ❤️ Mis Favoritos
+            </button>
+            {isAdmin && (
+              <button onClick={handleAdministrar} className="login-nav-button">
+                Administrar
+              </button>
+            )}
+            <button onClick={handleLogout} className="logout-nav-button">
+              Cerrar Sesión
             </button>
           </nav>
         </div>
@@ -267,9 +426,11 @@ const Home = () => {
                     />
                     <div className="movie-overlay">
                       <div className="movie-top-actions">
-                        <div className="movie-rating">
-                          ⭐ {pelicula.calificacion}
-                        </div>
+                        {pelicula.calificacion && (
+                          <div className="movie-rating">
+                            ⭐ {pelicula.calificacion}
+                          </div>
+                        )}
                         <button 
                           className={`favorite-button ${esFavorito(pelicula.id) ? 'favorited' : ''}`}
                           onClick={(e) => toggleFavorito(pelicula.id, e)}
@@ -286,11 +447,16 @@ const Home = () => {
                   <div className="movie-info">
                     <h4 className="movie-title">{pelicula.titulo}</h4>
                     <div className="movie-meta">
-                      <span className="movie-year">{pelicula.año}</span>
-                      <span className="movie-duration">{pelicula.duracion}</span>
-                      <span className="movie-genre">{pelicula.genero}</span>
+                      <span className="movie-year">{pelicula.anio || pelicula.año || 'N/A'}</span>
+                      {pelicula.duracion && <span className="movie-duration">{pelicula.duracion}</span>}
+                      <span className="movie-genre">{pelicula.genero || 'Sin clasificar'}</span>
                     </div>
-                    <p className="movie-description">{pelicula.descripcion}</p>
+                    {pelicula.director && (
+                      <p className="movie-director">Dirigida por: {pelicula.director}</p>
+                    )}
+                    {pelicula.descripcion && (
+                      <p className="movie-description">{pelicula.descripcion}</p>
+                    )}
                   </div>
                 </div>
               ))}

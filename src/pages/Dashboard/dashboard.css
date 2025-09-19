@@ -127,6 +127,27 @@ body {
   box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3);
 }
 
+.favorites-button {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #e91e63, #c2185b);
+  color: var(--text-light);
+  border: none;
+  border-radius: var(--border-radius-small);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.favorites-button:hover {
+  background: linear-gradient(135deg, #c2185b, #e91e63);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(233, 30, 99, 0.3);
+}
+
 .logout-button {
   padding: 0.75rem 1.5rem;
   background: linear-gradient(135deg, var(--pelisplus-red), var(--pelisplus-red-dark));
@@ -489,7 +510,7 @@ body {
     width: 100%;
   }
   
-  .home-button, .logout-button {
+  .home-button, .favorites-button, .logout-button {
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
     width: 100%;
