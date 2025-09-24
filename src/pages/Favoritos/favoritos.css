@@ -1,0 +1,731 @@
+/* ===== VARIABLES DE COLORES - PELISPLUS FAVORITOS ===== */
+:root {
+  --favoritos-bg: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2d2d2d 100%);
+  --header-bg: rgba(15, 15, 15, 0.95);
+  --card-bg: #ffffff;
+  --card-bg-hover: #f8f9fa;
+  --overlay-bg: rgba(0, 0, 0, 0.8);
+  --pelisplus-red: #e53e3e;
+  --pelisplus-red-dark: #c53030;
+  --pelisplus-red-light: #fc8181;
+  --pelisplus-orange: #ff6b35;
+  --pelisplus-orange-dark: #e55a2b;
+  --pelisplus-orange-light: #ffa366;
+  --pelisplus-black: #1a1a1a;
+  --pelisplus-gray: #2d3748;
+  --pelisplus-gray-light: #4a5568;
+  --text-primary: var(--pelisplus-black);
+  --text-secondary: #666666;
+  --text-light: #ffffff;
+  --text-muted: #a0aec0;
+  --border-color: #e2e8f0;
+  --border-color-focus: var(--pelisplus-orange);
+  --shadow-light: rgba(229, 62, 62, 0.1);
+  --shadow-medium: rgba(0, 0, 0, 0.15);
+  --shadow-strong: rgba(0, 0, 0, 0.25);
+  --shadow-glow: rgba(255, 107, 53, 0.3);
+  --border-radius: 12px;
+  --border-radius-small: 8px;
+  --border-radius-large: 20px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== RESET Y BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  background: var(--favoritos-bg);
+  min-height: 100vh;
+  color: var(--text-primary);
+}
+
+/* ===== FAVORITOS CONTAINER ===== */
+.favoritos-container {
+  min-height: 100vh;
+  background: var(--favoritos-bg);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== LOADING STATE ===== */
+.favoritos-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--favoritos-bg);
+  flex-direction: column;
+}
+
+.loading-spinner {
+  text-align: center;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.loading-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 1.5rem;
+  animation: logoFloat 3s ease-in-out infinite;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 249, 250, 0.9));
+  border-radius: var(--border-radius);
+  padding: 0.5rem;
+  box-shadow: 
+    0 4px 15px var(--shadow-medium),
+    0 0 0 1px rgba(255, 107, 53, 0.2);
+}
+
+.loading-text {
+  font-size: 1.125rem;
+  color: var(--text-light);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== HEADER ===== */
+.favoritos-header {
+  background: var(--header-bg);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-logo {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 249, 250, 0.9));
+  border-radius: var(--border-radius-small);
+  padding: 0.4rem;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.2);
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.header-logo:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(248, 249, 250, 0.95));
+  transform: scale(1.05);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 107, 53, 0.3);
+}
+
+.favoritos-title {
+  color: var(--text-light);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.header-nav {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.back-button {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, var(--pelisplus-orange), var(--pelisplus-orange-dark));
+  color: var(--text-light);
+  border: none;
+  border-radius: var(--border-radius-small);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.back-button:hover {
+  background: linear-gradient(135deg, var(--pelisplus-orange-dark), var(--pelisplus-orange));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3);
+}
+
+.logout-button {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, var(--pelisplus-red), var(--pelisplus-red-dark));
+  color: var(--text-light);
+  border: none;
+  border-radius: var(--border-radius-small);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.logout-button:hover {
+  background: linear-gradient(135deg, var(--pelisplus-red-dark), var(--pelisplus-red));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(229, 62, 62, 0.3);
+}
+
+/* ===== MAIN CONTENT ===== */
+.favoritos-main {
+  flex: 1;
+  padding: 2rem 0;
+}
+
+.favoritos-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* ===== HERO SECTION ===== */
+.favoritos-hero {
+  text-align: center;
+  padding: 3rem 0;
+  background: linear-gradient(135deg, rgba(229, 62, 62, 0.1), rgba(255, 107, 53, 0.05));
+  border-radius: var(--border-radius-large);
+  margin-bottom: 3rem;
+  border: 1px solid rgba(229, 62, 62, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.favoritos-hero h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-light);
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--pelisplus-red), var(--pelisplus-orange));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.favoritos-hero p {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+
+/* ===== STATS SECTION ===== */
+.favoritos-stats {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2rem;
+  align-items: center;
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  border-radius: var(--border-radius-large);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 25px var(--shadow-medium);
+}
+
+.stats-card {
+  text-align: center;
+  background: linear-gradient(135deg, var(--pelisplus-red), var(--pelisplus-red-dark));
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  color: var(--text-light);
+  box-shadow: 0 4px 15px rgba(229, 62, 62, 0.3);
+}
+
+.stats-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.stats-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stats-info p {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+/* ===== NO FAVORITOS ===== */
+.no-favoritos {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  border-radius: var(--border-radius-large);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 25px var(--shadow-medium);
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.no-favoritos-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.6;
+  background: linear-gradient(135deg, var(--pelisplus-red), var(--pelisplus-orange));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.no-favoritos h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: var(--text-light);
+  font-weight: 700;
+}
+
+.no-favoritos p {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+
+.explore-button {
+  background: linear-gradient(135deg, var(--pelisplus-red), var(--pelisplus-red-dark));
+  color: var(--text-light);
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: var(--border-radius);
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 15px rgba(229, 62, 62, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.explore-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.explore-button:hover::before {
+  left: 100%;
+}
+
+.explore-button:hover {
+  background: linear-gradient(135deg, var(--pelisplus-red-dark), var(--pelisplus-red));
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(229, 62, 62, 0.4);
+}
+
+/* ===== FAVORITOS GRID ===== */
+.favoritos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+/* ===== FAVORITO CARD ===== */
+.favorito-card {
+  background: var(--card-bg);
+  border-radius: var(--border-radius-large);
+  overflow: hidden;
+  box-shadow: 0 10px 30px var(--shadow-medium);
+  transition: var(--transition-slow);
+  cursor: pointer;
+  position: relative;
+  transform-origin: center;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.favorito-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 
+    0 20px 40px var(--shadow-strong),
+    0 0 0 1px rgba(255, 107, 53, 0.3);
+}
+
+.favorito-poster {
+  position: relative;
+  width: 100%;
+  height: 350px;
+  overflow: hidden;
+}
+
+.favorito-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition-slow);
+}
+
+.favorito-card:hover .favorito-poster img {
+  transform: scale(1.05);
+  filter: brightness(0.8);
+}
+
+.favorito-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay-bg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.favorito-card:hover .favorito-overlay {
+  opacity: 1;
+}
+
+.remove-favorite-button, .watch-button {
+  padding: 0.875rem 1.5rem;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  min-width: 140px;
+  position: relative;
+  overflow: hidden;
+}
+
+.remove-favorite-button {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: var(--text-light);
+  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+}
+
+.remove-favorite-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.remove-favorite-button:hover::before {
+  left: 100%;
+}
+
+.remove-favorite-button:hover {
+  background: linear-gradient(135deg, #c0392b, #e74c3c);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(231, 76, 60, 0.4);
+}
+
+.watch-button {
+  background: linear-gradient(135deg, var(--pelisplus-red), var(--pelisplus-red-dark));
+  color: var(--text-light);
+  box-shadow: 0 4px 15px rgba(229, 62, 62, 0.3);
+}
+
+.watch-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.watch-button:hover::before {
+  left: 100%;
+}
+
+.watch-button:hover {
+  background: linear-gradient(135deg, var(--pelisplus-red-dark), var(--pelisplus-red));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(229, 62, 62, 0.4);
+}
+
+/* ===== FAVORITO INFO ===== */
+.favorito-info {
+  padding: 1.25rem;
+  background: var(--card-bg);
+}
+
+.favorito-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.8rem 0;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.favorito-meta {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.favorito-year, .favorito-genre {
+  font-size: 0.8rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.favorito-year {
+  background: linear-gradient(135deg, var(--pelisplus-red), var(--pelisplus-red-dark));
+  color: var(--text-light);
+  box-shadow: 0 2px 8px rgba(229, 62, 62, 0.2);
+}
+
+.favorito-genre {
+  background: linear-gradient(135deg, var(--pelisplus-orange), var(--pelisplus-orange-dark));
+  color: var(--text-light);
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.2);
+}
+
+.favorito-director {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0.5rem 0;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.favorito-date {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.favorito-date small {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  background: rgba(229, 62, 62, 0.1);
+  padding: 0.3rem 0.6rem;
+  border-radius: 15px;
+  border: 1px solid rgba(229, 62, 62, 0.2);
+}
+
+/* ===== ANIMACIONES ADICIONALES ===== */
+.favoritos-grid .favorito-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.favoritos-grid .favorito-card:nth-child(1) { animation-delay: 0.1s; }
+.favoritos-grid .favorito-card:nth-child(2) { animation-delay: 0.2s; }
+.favoritos-grid .favorito-card:nth-child(3) { animation-delay: 0.3s; }
+.favoritos-grid .favorito-card:nth-child(4) { animation-delay: 0.4s; }
+.favoritos-grid .favorito-card:nth-child(5) { animation-delay: 0.5s; }
+.favoritos-grid .favorito-card:nth-child(6) { animation-delay: 0.6s; }
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1024px) {
+  .favoritos-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .favoritos-title {
+    font-size: 1.3rem;
+  }
+
+  .header-nav {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .back-button, .logout-button {
+    flex: 1;
+    min-width: 120px;
+    padding: 0.625rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .favoritos-main {
+    padding: 1.5rem 0;
+  }
+
+  .favoritos-content {
+    padding: 0 1rem;
+  }
+
+  .favoritos-hero {
+    padding: 2rem 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .favoritos-hero h2 {
+    font-size: 2rem;
+  }
+
+  .favoritos-hero p {
+    font-size: 1rem;
+  }
+
+  .favoritos-stats {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .stats-card {
+    padding: 1.25rem;
+  }
+
+  .stats-number {
+    font-size: 2rem;
+  }
+
+  .favoritos-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .favorito-poster {
+    height: 300px;
+  }
+
+  .no-favoritos {
+    padding: 3rem 1.5rem;
+  }
+
+  .no-favoritos h3 {
+    font-size: 1.5rem;
+  }
+
+  .no-favoritos p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .favoritos-hero h2 {
+    font-size: 1.75rem;
+  }
+
+  .favoritos-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .favorito-card {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .favorito-poster {
+    height: 280px;
+  }
+
+  .favorito-meta {
+    justify-content: center;
+  }
+
+  .remove-favorite-button, .watch-button {
+    min-width: 120px;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .no-favoritos {
+    padding: 2.5rem 1rem;
+  }
+
+  .no-favoritos-icon {
+    font-size: 3rem;
+  }
+
+  .explore-button {
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .favoritos-content {
+    padding: 0 0.5rem;
+  }
+
+  .favorito-info {
+    padding: 1rem;
+  }
+
+  .favorito-title {
+    font-size: 1rem;
+  }
+}
